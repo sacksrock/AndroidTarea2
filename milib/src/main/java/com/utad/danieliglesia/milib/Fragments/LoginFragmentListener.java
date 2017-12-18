@@ -6,5 +6,5 @@ package com.utad.danieliglesia.milib.Fragments;
 
 public interface LoginFragmentListener {
     public void OnRegisterClicked();
-    public void OnLoginClicked();
+    public void OnLoginClicked(String User, String Pass);
 }

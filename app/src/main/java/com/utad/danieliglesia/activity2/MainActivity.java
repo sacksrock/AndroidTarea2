@@ -1,14 +1,13 @@
 package com.utad.danieliglesia.activity2;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.utad.danieliglesia.milib.Fragments.ListaAndroidAdapter;
-import com.utad.danieliglesia.milib.Fragments.ListaAndroidFragment;
+
+
+import com.google.firebase.database.DataSnapshot;
 import com.utad.danieliglesia.milib.Fragments.LoginFragment;
 import com.utad.danieliglesia.milib.Fragments.LoginFragmentListener;
 import com.utad.danieliglesia.milib.Fragments.RegisterFragment;
@@ -16,71 +15,100 @@ import com.utad.danieliglesia.milib.Fragments.RegisterFragmentListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MainActivityEvents mainActivityEvents;
-    RegisterFragment registerFragment;
     LoginFragment loginFragment;
-    FirebaseAdmin firebaseAdmin;
-    ListaAndroidFragment androidFragment;
-    private FirebaseAuth mAuth;
+    RegisterFragment registerFragment;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mainActivityEvents = new MainActivityEvents(this);
-        firebaseAdmin=new FirebaseAdmin(this);
-        firebaseAdmin.setListener(mainActivityEvents);
 
+        //inicializado el fragment del Login
         loginFragment = (LoginFragment)getSupportFragmentManager().findFragmentById(R.id.loginFragment);
-        loginFragment.setListener(mainActivityEvents);
         registerFragment = (RegisterFragment) getSupportFragmentManager().findFragmentById(R.id.registerFragment);
+
+        MainActivityEvents mainActivityEvents = new MainActivityEvents(this);
+
+
+        loginFragment.setListener(mainActivityEvents);
         registerFragment.setListener(mainActivityEvents);
+        DataHolder.instance.firebaseAdmin.setListener((FirebaseAdminListener) mainActivityEvents);
+
+        FragmentTransaction transition = getSupportFragmentManager().beginTransaction();
+        transition.show(loginFragment);
+        transition.hide(registerFragment);
+        transition.commit();
+
+
 
     }
-    
 }
-class MainActivityEvents implements LoginFragmentListener, RegisterFragmentListener, FirebaseAdmin.FireBaseAdminListener{
-    private MainActivity mainActivity;
-    
+
+class MainActivityEvents implements LoginFragmentListener, RegisterFragmentListener, FirebaseAdminListener{
+    MainActivity mainActivity;
     public MainActivityEvents(MainActivity mainActivity){
         this.mainActivity=mainActivity;
     }
+
     @Override
-    public void OnRegisterClicked() {
-        FragmentTransaction transicion = this.mainActivity.getSupportFragmentManager().beginTransaction();
-        transicion.show(this.mainActivity.registerFragment);
-        transicion.hide(this.mainActivity.loginFragment);
-        transicion.commit();
+    public void OnLoginClicked(String sUser, String sPass) {
+        DataHolder.instance.firebaseAdmin.login(sUser,sPass,mainActivity);
     }
 
     @Override
-    public void OnLoginClicked() {
-        FragmentTransaction transicion = this.mainActivity.getSupportFragmentManager().beginTransaction();
-        mainActivity.firebaseAdmin.signIn(mainActivity.loginFragment.editUsuario.getText().toString(),
-                mainActivity.loginFragment.editConstrasena.getText().toString());
-        transicion.hide(this.mainActivity.loginFragment);
-        transicion.hide(this.mainActivity.registerFragment);
-        transicion.commit();
+    public void OnRegisterClicked() {
+        FragmentTransaction transition = mainActivity.getSupportFragmentManager().beginTransaction();
+        transition.hide(mainActivity.loginFragment);
+        transition.show(mainActivity.registerFragment);
+        transition.commit();
+
     }
+
+    @Override
+    public void OnAceptarClicked(String sUser, String sPass) {
+        DataHolder.instance.firebaseAdmin.singIn(sUser,sPass,mainActivity);
+    }
+
+    @Override
     public void OnCancelarClicked() {
-        FragmentTransaction transicion = this.mainActivity.getSupportFragmentManager().beginTransaction();
-        transicion.hide(this.mainActivity.registerFragment);
-        transicion.show(this.mainActivity.loginFragment);
-        transicion.commit();
-    }
-    public void OnAceptarClicked() {
-        mainActivity.firebaseAdmin.loginWithEmailPass(mainActivity.registerFragment.editUsuario.getText().toString(),
-                mainActivity.registerFragment.editContrasena.getText().toString());
+        FragmentTransaction transition = mainActivity.getSupportFragmentManager().beginTransaction();
+        transition.show(mainActivity.loginFragment);
+        transition.hide(mainActivity.registerFragment);
+        transition.commit();
+
     }
 
     @Override
-    public void fireBaseAdminUserConnected(boolean blconnected) {
+    public void registerFirebase(Boolean ok) {
+        if(ok){
+            Intent intent = new Intent(mainActivity,SecondActivity.class);
+            mainActivity.startActivity(intent);
+            mainActivity.finish();
+        }
+        else{
+
         }
 
+    }
 
     @Override
-    public void fireBaseAdminUserRegister(boolean blconnected) {
+    public void loginFirebase(Boolean ok) {
+        if(ok){
+            Intent intent = new Intent(mainActivity,SecondActivity.class);
+            mainActivity.startActivity(intent);
+            mainActivity.finish();
+        }
+        else{
 
         }
     }
+
+    @Override
+    public void Rama(String rama, DataSnapshot dataSnapshot) {
+
+    }
+
+
+}

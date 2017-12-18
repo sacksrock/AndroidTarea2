@@ -72,7 +72,7 @@ class RegisterFragmentEvents implements View.OnClickListener{
             this.registerFragment.registerFragmentListener.OnCancelarClicked();
         }else if (v.getId()==R.id.btnAceptar){
             if (this.registerFragment.registerFragmentListener!=null);
-            this.registerFragment.registerFragmentListener.OnAceptarClicked();
+            this.registerFragment.registerFragmentListener.OnAceptarClicked(registerFragment.editUsuario.getText().toString(), registerFragment.editContrasena.getText().toString());
         }
     }
 }

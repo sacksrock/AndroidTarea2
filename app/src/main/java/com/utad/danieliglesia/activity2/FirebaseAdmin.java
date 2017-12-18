@@ -13,6 +13,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by sergioredondo on 24/11/17.
@@ -20,76 +25,85 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class FirebaseAdmin {
     private FirebaseAuth mAuth;
-    FirebaseUser currentUser;
-    Activity activity;
-    FireBaseAdminListener listener;
+    public FirebaseUser user;
+    FirebaseAdminListener listener;
+    FirebaseDatabase database;
+    DatabaseReference myRefRaiz;
 
-    public void setListener(FireBaseAdminListener listener) {
+
+    public FirebaseAdmin(){
+        mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        myRefRaiz = database.getReference();
+    }
+    public void setListener(FirebaseAdminListener listener) {
+
         this.listener = listener;
     }
 
-    public FirebaseAdmin(Activity activity){
-        mAuth=FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        this.activity=activity;
-    }
-
-
-    public void loginWithEmailPass(final String email, final String password){
-        System.out.println(password+"-----------------------------------"+ email);
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(FirebaseAdmin.this.activity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "createUserWithEmail:success");
-
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            FirebaseAdmin.this.listener.fireBaseAdminUserConnected(true);
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            //Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
-                            //        Toast.LENGTH_SHORT).show();
-                            FirebaseAdmin.this.listener.fireBaseAdminUserConnected(false);
-                        }
-
-                        // ...
-                    }
-                });
-    }
-
-
-    public void signIn(String email, String password) {
-
-        System.out.println(password+"-----------------------------------"+ email);
-        mAuth.signInWithEmailAndPassword(email, password)
+    public void login(String email, String pass, Activity activity){
+        mAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d("FirebaseAdmin", "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            FirebaseAdmin.this.listener.fireBaseAdminUserRegister(true);
-                            System.out.println("siiiiiiiiiiii");
-                        } else {
-                            // If sign in fails, display a message to the user
-                            FirebaseAdmin.this.listener.fireBaseAdminUserRegister(false);
+                            user = FirebaseAuth.getInstance().getCurrentUser();
+                            listener.loginFirebase(true);
+                        }
+                        else{
+                            listener.loginFirebase(false);
                         }
 
                         // ...
                     }
                 });
-
     }
+    public void singIn(String email, String pass, Activity activity){
+        mAuth.createUserWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d("FirebaseAdmin", "createUserWithEmail:onComplete:" + task.isSuccessful());
 
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (task.isSuccessful()) {
+                            user = FirebaseAuth.getInstance().getCurrentUser();
+                            listener.registerFirebase(true);
+                        }
+                        else{
+                            listener.registerFirebase(false);
+                        }
 
-    public interface FireBaseAdminListener{
+                        // ...
+                    }
+                });
+    }
+    public void Rama(final String rama){
+        DatabaseReference refRama= myRefRaiz.child(rama);
+        refRama.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                listener.Rama(rama,dataSnapshot);
+                //.d(TAG, "Value is: " + value);
+            }
 
-        public void fireBaseAdminUserConnected(boolean blconnected);
-        public void fireBaseAdminUserRegister(boolean blconnected);
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                listener.Rama(rama,null);
+
+                // Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
 
     }
 }

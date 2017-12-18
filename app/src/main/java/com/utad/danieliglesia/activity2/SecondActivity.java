@@ -7,7 +7,18 @@ package com.utad.danieliglesia.activity2;
         import android.os.Bundle;
 
 
+        //import com.google.android.gms.common.data.DataHolder;
+        import com.google.firebase.database.DataSnapshot;
+        import com.google.firebase.database.GenericTypeIndicator;
+        import com.utad.danieliglesia.activity2.Adapters.ListaCochesAdapter;
+        import com.utad.danieliglesia.activity2.Adapters.ListaMensajesAdapter;
+        import com.utad.danieliglesia.activity2.Objets.Coche;
+        import com.utad.danieliglesia.activity2.Objets.Mensaje;
+        import com.utad.danieliglesia.milib.Fragments.ListaFragment;
+
+
         import java.util.ArrayList;
+
 
 public class SecondActivity extends AppCompatActivity {
 
@@ -16,15 +27,15 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.acticity_second);
 
-        SecondActivityEvents events = new SecondActivityEvents(this);
-        DataHolder.instance.fireBaseAdmin.setListener(events);
+        SecondActivityEvents Events = new SecondActivityEvents(this);
+        DataHolder.instance.firebaseAdmin.setListener(Events);
 
         listaMensajesFragment = (ListaFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentListaMensajes);
         ListaFragmentCoches = (ListaFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentListCoches);
 
-        DataHolder.instance.fireBaseAdmin.descargarYObservarRama("Coches");
+        DataHolder.instance.firebaseAdmin.Rama("Coches");
 
         ArrayList<String> mdatos= new ArrayList<>();
 
@@ -35,7 +46,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 }
 
-class SecondActivityEvents implements FireBaseAdminListener{
+class SecondActivityEvents implements FirebaseAdminListener {
 
     SecondActivity secondActivity;
 
@@ -43,25 +54,22 @@ class SecondActivityEvents implements FireBaseAdminListener{
         this.secondActivity = secondActivity;
     }
 
+
     @Override
-    public void FireBaseAdmin_RamaDescargada(String rama, DataSnapshot dataSnapshot) {
+    public void Rama (String rama, DataSnapshot dataSnapshot) {
         if(rama.equals("Coches")){
-            GenericTypeIndicator<ArrayList<FBCoche>> indicator = new GenericTypeIndicator<ArrayList<FBCoche>>(){};
-            ArrayList<FBCoche> coches = dataSnapshot.getValue(indicator);
+            GenericTypeIndicator<ArrayList<Coche>> indicator = new GenericTypeIndicator<ArrayList<Coche>>(){};
+            ArrayList<Coche> coches = dataSnapshot.getValue(indicator);
             ListaCochesAdapter listaCochesAdapter = new ListaCochesAdapter(coches,secondActivity);
             secondActivity.ListaFragmentCoches.recyclerView.setAdapter(listaCochesAdapter);
         }
     }
-
-
-
     @Override
-    public void FireBaseAdmin_RegisterOk(Boolean ok) {
+    public void registerFirebase(Boolean ok) {
 
     }
-
     @Override
-    public void FireBaseAdmin_LoginOk(Boolean ok) {
+    public void loginFirebase(Boolean ok) {
 
     }
 }

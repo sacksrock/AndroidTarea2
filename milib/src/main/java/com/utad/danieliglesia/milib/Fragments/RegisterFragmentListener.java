@@ -6,5 +6,5 @@ package com.utad.danieliglesia.milib.Fragments;
 
 public interface RegisterFragmentListener {
     public void OnCancelarClicked();
-    public void OnAceptarClicked();
+    public void OnAceptarClicked(String User, String Pass);
 }

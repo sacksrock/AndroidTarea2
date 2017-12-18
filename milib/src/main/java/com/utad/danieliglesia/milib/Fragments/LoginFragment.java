@@ -68,7 +68,7 @@ class LoginFragmentEvents implements View.OnClickListener{
             this.loginFragment.loginFragmentListener.OnRegisterClicked();
         }else if (v.getId()==R.id.btnLogin){
             if (this.loginFragment.loginFragmentListener!=null);
-            this.loginFragment.loginFragmentListener.OnLoginClicked();
+            this.loginFragment.loginFragmentListener.OnLoginClicked(this.loginFragment.editUsuario.getText().toString(),this.loginFragment.editConstrasena.getText().toString());
         }
 
     }
