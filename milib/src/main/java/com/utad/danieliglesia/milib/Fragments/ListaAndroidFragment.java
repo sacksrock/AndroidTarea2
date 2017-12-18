@@ -29,7 +29,7 @@ public class ListaAndroidFragment extends Fragment {
         View v =inflater.inflate(R.layout.fragment_lista_android, container, false);
         recyclerView= v.findViewById(R.id.listaandroid);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
-        
+
 
 
         return v;
