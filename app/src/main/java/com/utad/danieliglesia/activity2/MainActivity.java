@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.utad.danieliglesia.milib.Fragments.ListaAndroidAdapter;
+import com.utad.danieliglesia.milib.Fragments.ListaAndroidFragment;
 import com.utad.danieliglesia.milib.Fragments.LoginFragment;
 import com.utad.danieliglesia.milib.Fragments.LoginFragmentListener;
 import com.utad.danieliglesia.milib.Fragments.RegisterFragment;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     RegisterFragment registerFragment;
     LoginFragment loginFragment;
     FirebaseAdmin firebaseAdmin;
+    ListaAndroidFragment androidFragment;
     private FirebaseAuth mAuth;
 
 
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         loginFragment.setListener(mainActivityEvents);
         registerFragment = (RegisterFragment) getSupportFragmentManager().findFragmentById(R.id.registerFragment);
         registerFragment.setListener(mainActivityEvents);
+
     }
     
 }
@@ -52,8 +56,12 @@ class MainActivityEvents implements LoginFragmentListener, RegisterFragmentListe
 
     @Override
     public void OnLoginClicked() {
+        FragmentTransaction transicion = this.mainActivity.getSupportFragmentManager().beginTransaction();
         mainActivity.firebaseAdmin.signIn(mainActivity.loginFragment.editUsuario.getText().toString(),
                 mainActivity.loginFragment.editConstrasena.getText().toString());
+        transicion.hide(this.mainActivity.loginFragment);
+        transicion.hide(this.mainActivity.registerFragment);
+        transicion.commit();
     }
     public void OnCancelarClicked() {
         FragmentTransaction transicion = this.mainActivity.getSupportFragmentManager().beginTransaction();

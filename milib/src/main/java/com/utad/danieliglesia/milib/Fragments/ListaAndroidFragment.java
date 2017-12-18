@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import com.utad.danieliglesia.milib.R;
 
+import java.util.ArrayList;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -29,10 +31,17 @@ public class ListaAndroidFragment extends Fragment {
         View v =inflater.inflate(R.layout.fragment_lista_android, container, false);
         recyclerView= v.findViewById(R.id.listaandroid);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
-
-
-
+        /*ArrayList<String> mdatos=new ArrayList<>();
+        mdatos.add("mensaje1");
+        mdatos.add("mensaje2");
+        mdatos.add("mensaje3");
+        mdatos.add("mensaje4");
+        ListaAndroidAdapter listaAndroidAdapter=new ListaAndroidAdapter(mdatos);
+        recyclerView.setAdapter(listaAndroidAdapter);
+*/
         return v;
     }
-
+public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter){
+        recyclerView.setAdapter(adapter);
+}
 }
