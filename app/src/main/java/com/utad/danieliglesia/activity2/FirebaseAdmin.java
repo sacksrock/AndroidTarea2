@@ -6,6 +6,7 @@ package com.utad.danieliglesia.activity2;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -72,8 +73,9 @@ public class FirebaseAdmin {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
                             FirebaseAdmin.this.listener.fireBaseAdminUserRegister(true);
+                            System.out.println("siiiiiiiiiiii");
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // If sign in fails, display a message to the user
                             FirebaseAdmin.this.listener.fireBaseAdminUserRegister(false);
                         }
 
